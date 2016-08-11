@@ -16,6 +16,8 @@ apikey = ""
 cachedir = ""
 privatedir = ""
 
+rootdir = os.path.expanduser('~/.openml')
+
 if sys.version_info[0] < 3:
     import ConfigParser as configparser
     from StringIO import StringIO
@@ -39,7 +41,7 @@ def _setup():
     global server
     # read config file, create cache directory
     try:
-        os.mkdir(os.path.expanduser('~/.openml'))
+        os.mkdir(rootdir)
     except (IOError, OSError):
         # TODO add debug information
         pass
@@ -107,10 +109,10 @@ def _parse_config():
     defaults = {'apikey': apikey,
                 'server': server,
                 'verbosity': 0,
-                'cachedir': os.path.expanduser('~/.openml/cache'),
-                'private_directory': os.path.expanduser('~/.openml/private')}
+                'cachedir': os.path.join(rootdir, 'cache'),
+                'private_directory': os.path.join(rootdir, 'private')}
 
-    config_file = os.path.expanduser('~/.openml/config')
+    config_file = os.path.join(rootdir, 'config')
     config = configparser.RawConfigParser(defaults=defaults)
 
     if not os.path.exists(config_file):
@@ -168,4 +170,7 @@ def get_private_directory():
 
 __all__ = ["set_cache_directory", 'get_cache_directory', 'get_private_directory']
 
-_setup()
+try:
+    _setup()
+except IOError as e:
+    logger.error(e)
