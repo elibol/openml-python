@@ -6,19 +6,20 @@ import arff
 
 import numpy as np
 import scipy.sparse
+import xmltodict
 
 from ..util import is_string
 
 logger = logging.getLogger(__name__)
 
 
-def create_basic_dataset(description, arff_string):
+def create_basic_dataset(description_string, arff_string):
     """Create a dataset object from a description dict.
 
     Parameters
     ----------
-    description : dict
-        Description of a dataset in xmlish dict.
+    description : string
+        Description of a dataset as xml string.
     arff_string : string
         contents of dataset arff file.
 
@@ -27,6 +28,9 @@ def create_basic_dataset(description, arff_string):
     dataset : dataset object
         Dataset object from dict and arff.
     """
+
+    description = xmltodict.parse(description_string)["oml:data_set_description"]
+
     dataset = BasicOpenMLDataset(
         description["oml:id"],
         description["oml:name"],
